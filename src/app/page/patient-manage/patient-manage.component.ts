@@ -1,12 +1,13 @@
-import { NgFor } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-patient-manage',
   standalone: true,
-  imports: [HttpClientModule, NgFor],
+  imports: [CommonModule,FormsModule,HttpClientModule, NgFor],
   templateUrl: './patient-manage.component.html',
   styleUrl: './patient-manage.component.css'
 })
@@ -62,5 +63,32 @@ export class PatientManageComponent {
         });
       }
     });
+  }
+
+  public selectedPatient:any={};
+  selectPatient(patient:any){
+    console.log(patient);
+    this.selectedPatient=patient;
+  }
+
+  updatePatient(){
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.http.put("http://localhost:8080/patient/update",this.selectedPatient).subscribe(res=>{
+          Swal.fire("Saved!", "", "success");
+        })
+        
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+
   }
 }
